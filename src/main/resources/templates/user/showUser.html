@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+Пользователь
+<p th:text="${'Id: ' +  user.id}"></p>
+<p th:text="${'Имя: ' +  user.name}"></p>
+<p th:text="${'Почта: ' +  user.email}"></p>
+<p th:text="${'Возраст: ' +  user.age}"></p>
+<p th:text="${'Роли: '}">
+    <div th:each="role : ${user.roles}">
+        <span th:text="${role.role}"></span>
+    </div>
+</p>
+
+<br>
+<br>
+<a th:href="@{/logout}">Выйти</a>
+
+</body>
+</html>
