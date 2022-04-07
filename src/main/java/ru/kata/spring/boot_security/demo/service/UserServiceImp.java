@@ -46,15 +46,5 @@ public class UserServiceImp implements UserService {
         return userDao.getUserByEmail(email);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.getUserByEmail(username);
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-
-        return user;
-    }
 
 }

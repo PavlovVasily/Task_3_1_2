@@ -5,7 +5,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 
 import java.util.List;
 
-public interface UserService extends UserDetailsService {
+public interface UserService {
 
     boolean saveUser(String name, String email, byte age, String password);
 
