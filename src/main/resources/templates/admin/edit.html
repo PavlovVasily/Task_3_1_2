@@ -22,6 +22,14 @@
     <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
     <div style="color:red" th:if="${emailError != null}" th:text="${emailError}">Email error</div>
     <br/>
+    <select class="custom-select" size="3"
+            name="roleNames" multiple>
+        <option value="ROLE_USER">USER</option>
+        <option value="ROLE_ADMIN" selected>
+            ADMIN
+        </option>
+    </select>
+    <br>
     <input type="submit" value="Изменить"/>
 </form>
 

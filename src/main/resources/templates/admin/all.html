@@ -12,6 +12,7 @@
 <div>
     <table>
         <tr>
+            <th>ID</th>
             <th>Имя</th>
             <th>Возраст</th>
             <th>Почта</th>
@@ -22,6 +23,7 @@
         </tr>
 
         <tr th:each="user : ${users}">
+            <td><p th:text="${user.id}" align="center"></p></td>
             <td><p th:text="${user.name}" align="center"></p></td>
             <td><p th:text="${user.age}" align="center"></p></td>
             <td><p th:text="${user.email}" align="center"></p></td>

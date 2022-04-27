@@ -10,9 +10,11 @@ import ru.kata.spring.boot_security.demo.model.User;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @Transactional(readOnly = true)
@@ -24,9 +26,19 @@ public class UserDaoImp implements UserDao {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Transactional
+    public void iniRoles () {
+        System.out.println("iniRoles");
+        em.createNativeQuery("INSERT INTO `pptask_3_1_2`.`roles` (`id`, `role`) VALUES ('1', 'ROLE_USER');")
+                .executeUpdate();
+        em.createNativeQuery("INSERT INTO `pptask_3_1_2`.`roles` (`id`, `role`) VALUES ('2', 'ROLE_ADMIN');")
+                .executeUpdate();
+
+    }
+
     @Override
     @Transactional
-    public boolean saveUser(String name, String email, byte age, String password) {
+    public boolean saveUser(String name, String email, byte age, String password, String[] roleNames) {
         User userFromDB = getUserByEmail(email);
         if (userFromDB != null) {
             return false;
@@ -36,7 +48,15 @@ public class UserDaoImp implements UserDao {
         user.setAge(age);
         user.setName(name);
         user.setEmail(email);
-        user.setRoles(Collections.singleton(new Role(1L, "ROLE_USER")));
+
+        List<Role> roleList = em.createQuery("select r from Role r where r.role IN (:roles)", Role.class)
+                .setParameter("roles", Arrays.asList(roleNames))
+                .getResultList();
+        if (roleList == null) {
+            return false;
+        }
+        user.setRoles(new HashSet<>(roleList));
+
         user.setPassword(passwordEncoder.encode(password));
         em.persist(user);
         em.flush();
@@ -53,17 +73,26 @@ public class UserDaoImp implements UserDao {
     @Override
     public List<User> getAllUsers() {
 
-        return em.createQuery("select u from User u join fetch u.roles").getResultList();
+        List<User> notSortList = new ArrayList<>(
+                new HashSet<>(
+                        em.createQuery("select u from User u join fetch u.roles").
+                                getResultList()));
 
+        return notSortList.stream().
+                sorted(((o1, o2) -> (int) (o1.getId() - o2.getId()))).
+                collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public boolean updateUser(User user) {
-        User userFromDB = getUserByEmail(user.getEmail());
-        if (userFromDB != null) {
+    public boolean updateUser(User user, String[] roleNames) {
+        List<Role> roleList = em.createQuery("select r from Role r where r.role IN (:roles)", Role.class)
+                .setParameter("roles", Arrays.asList(roleNames))
+                .getResultList();
+        if (roleList == null) {
             return false;
         }
+        user.setRoles(new HashSet<>(roleList));
 
         em.merge(user);
         return true;

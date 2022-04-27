@@ -27,7 +27,8 @@ public class AdminController {
     }
 
     @PostMapping("/admin/new")
-    public String create(@ModelAttribute("user") @Valid User user,
+    public String create(@RequestParam(required = false) String[] roleNames,
+                         @ModelAttribute("user") @Valid User user,
                          BindingResult bindingResult /*Всегда идет после аргумента с анотацией валид. Сюда пишутся ошибки валидности*/,
                          Model model) {
         if (bindingResult.hasErrors()) {
@@ -41,7 +42,8 @@ public class AdminController {
             return "admin/new";
         }
 
-        if (!userService.saveUser(user.getName(), user.getEmail(), (byte) user.getAge(), user.getPassword())) {
+        //String [] roleNames = {"ROLE_USER", "ROLE_ADMIN"};
+        if (!userService.saveUser(user.getName(), user.getEmail(), (byte) user.getAge(), user.getPassword(), roleNames)) {
             model.addAttribute("emailError", "Пользователь с такой почтой уже существует");
             return "admin/new";
         }
@@ -56,7 +58,8 @@ public class AdminController {
     }
 
     @PatchMapping("/admin/{id}")
-    public String update(@ModelAttribute("user") @Valid User user,
+    public String update(@RequestParam(required = false) String[] roleNames,
+                         @ModelAttribute("user") @Valid User user,
                          BindingResult bindingResult,
                          @PathVariable("id") long id,
                          Model model) {
@@ -68,7 +71,7 @@ public class AdminController {
         user.setPassword(editedUser.getPassword());
         user.setRoles(editedUser.getRoles());
 
-        if (!userService.updateUser(user)) {
+        if (!userService.updateUser(user, roleNames)) {
             model.addAttribute("emailError", "Пользователь с такой почтой уже существует");
             return "admin/edit";
         }

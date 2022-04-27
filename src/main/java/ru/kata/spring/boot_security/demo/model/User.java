@@ -141,7 +141,9 @@ public class User implements UserDetails {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", age=" + age +
-/*                ", roles=" + roles.toString() +*/
+                ", password='" + password + '\'' +
+                ", passwordConfirm='" + passwordConfirm + '\'' +
+                ", roles=" + roles +
                 '}';
     }
 }
